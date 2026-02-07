@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Aprende Español! - Spanish Learning App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .mode-selector {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .mode-btn:hover {
+            background: #e9ecef;
+        }
+
+        .mode-btn.active {
+            color: #f5576c;
+            background: white;
+        }
+
+        .mode-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #f5576c;
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 400px;
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+
+        .flashcard .word {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .flashcard .translation {
+            font-size: 1.5em;
+            opacity: 0.9;
+        }
+
+        .flashcard.flipped .word {
+            font-size: 2em;
+        }
+
+        .flashcard.flipped .translation {
+            font-size: 2.5em;
+            opacity: 1;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .phrase-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .phrase-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .phrase-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .phrase-spanish {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .phrase-english {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .quiz-question h3 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .quiz-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .score {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .speaker-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+        }
+
+        .speaker-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+
+        .phrase-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phrase-header .speaker-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Aprende Español! 🇪🇸</h1>
+            <p>Master Spanish one word at a time</p>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('flashcards')">📚 Flashcards</button>
+            <button class="mode-btn" onclick="switchMode('phrases')">💬 Phrases</button>
+            <button class="mode-btn" onclick="switchMode('quiz')">🎯 Quiz</button>
+        </div>
+
+        <div class="content" id="content">
+            <!-- Content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const vocabulary = {
+            basics: [
+                { spanish: "Hola", english: "Hello", sentence: "Hola, ¿cómo estás?", sentenceEn: "Hello, how are you?", breakdown: "Hola = Hello | ¿cómo estás? = how are you?" },
+                { spanish: "Adiós", english: "Goodbye", sentence: "Adiós, hasta mañana.", sentenceEn: "Goodbye, see you tomorrow.", breakdown: "Adiós = Goodbye | hasta = until | mañana = tomorrow" },
+                { spanish: "Gracias", english: "Thank you", sentence: "Gracias por tu ayuda.", sentenceEn: "Thank you for your help.", breakdown: "Gracias = Thank you | por = for | tu = your | ayuda = help" },
+                { spanish: "Por favor", english: "Please", sentence: "Un café, por favor.", sentenceEn: "A coffee, please.", breakdown: "Un = A/An | café = coffee | por favor = please" },
+                { spanish: "Sí", english: "Yes", sentence: "Sí, me gusta mucho.", sentenceEn: "Yes, I like it a lot.", breakdown: "Sí = Yes | me gusta = I like | mucho = a lot" },
+                { spanish: "No", english: "No", sentence: "No, no quiero.", sentenceEn: "No, I don't want to.", breakdown: "No = No | quiero = I want" },
+                { spanish: "Perdón", english: "Sorry", sentence: "Perdón, fue mi error.", sentenceEn: "Sorry, it was my mistake.", breakdown: "Perdón = Sorry | fue = it was | mi = my | error = mistake" },
+                { spanish: "Agua", english: "Water", sentence: "Necesito un vaso de agua.", sentenceEn: "I need a glass of water.", breakdown: "Necesito = I need | un vaso = a glass | de = of | agua = water" },
+                { spanish: "Buenos días", english: "Good morning", sentence: "Buenos días, ¿cómo dormiste?", sentenceEn: "Good morning, how did you sleep?", breakdown: "Buenos días = Good morning | ¿cómo dormiste? = how did you sleep?" },
+                { spanish: "Buenas noches", english: "Good night", sentence: "Buenas noches, hasta mañana.", sentenceEn: "Good night, see you tomorrow.", breakdown: "Buenas noches = Good night | hasta = until | mañana = tomorrow" },
+                { spanish: "Buenas tardes", english: "Good afternoon", sentence: "Buenas tardes, ¿qué tal?", sentenceEn: "Good afternoon, how's it going?", breakdown: "Buenas tardes = Good afternoon | ¿qué tal? = how's it going?" },
+                { spanish: "De nada", english: "You're welcome", sentence: "De nada, fue un placer.", sentenceEn: "You're welcome, it was a pleasure.", breakdown: "De nada = You're welcome | fue = it was | un placer = a pleasure" },
+                { spanish: "Disculpe", english: "Excuse me", sentence: "Disculpe, ¿dónde está el baño?", sentenceEn: "Excuse me, where is the bathroom?", breakdown: "Disculpe = Excuse me | ¿dónde está? = where is? | el baño = the bathroom" },
+                { spanish: "Con permiso", english: "Excuse me (passing)", sentence: "Con permiso, necesito pasar.", sentenceEn: "Excuse me, I need to pass.", breakdown: "Con permiso = With permission | necesito = I need | pasar = to pass" },
+                { spanish: "Mucho gusto", english: "Nice to meet you", sentence: "Mucho gusto, me llamo Ana.", sentenceEn: "Nice to meet you, my name is Ana.", breakdown: "Mucho gusto = Nice to meet you | me llamo = my name is | Ana = Ana" },
+                { spanish: "¿Cómo te llamas?", english: "What's your name?", sentence: "¿Cómo te llamas?", sentenceEn: "What's your name?", breakdown: "¿Cómo = How/What | te llamas? = do you call yourself?" }
+            ],
+            food: [
+                { spanish: "Comida", english: "Food", sentence: "La comida está deliciosa.", sentenceEn: "The food is delicious.", breakdown: "La = The | comida = food | está = is | deliciosa = delicious" },
+                { spanish: "Pan", english: "Bread", sentence: "Quiero pan con mantequilla.", sentenceEn: "I want bread with butter.", breakdown: "Quiero = I want | pan = bread | con = with | mantequilla = butter" },
+                { spanish: "Leche", english: "Milk", sentence: "Bebo leche cada mañana.", sentenceEn: "I drink milk every morning.", breakdown: "Bebo = I drink | leche = milk | cada = each/every | mañana = morning" },
+                { spanish: "Carne", english: "Meat", sentence: "No como carne los lunes.", sentenceEn: "I don't eat meat on Mondays.", breakdown: "No como = I don't eat | carne = meat | los lunes = on Mondays" },
+                { spanish: "Fruta", english: "Fruit", sentence: "Me encanta la fruta fresca.", sentenceEn: "I love fresh fruit.", breakdown: "Me encanta = I love | la = the | fruta = fruit | fresca = fresh" },
+                { spanish: "Queso", english: "Cheese", sentence: "El queso está en la nevera.", sentenceEn: "The cheese is in the fridge.", breakdown: "El = The | queso = cheese | está = is | en = in | la nevera = the fridge" },
+                { spanish: "Arroz", english: "Rice", sentence: "Voy a cocinar arroz hoy.", sentenceEn: "I'm going to cook rice today.", breakdown: "Voy a = I'm going to | cocinar = cook | arroz = rice | hoy = today" },
+                { spanish: "Café", english: "Coffee", sentence: "Tomo café por la mañana.", sentenceEn: "I drink coffee in the morning.", breakdown: "Tomo = I drink/take | café = coffee | por la mañana = in the morning" },
+                { spanish: "Té", english: "Tea", sentence: "Prefiero té verde.", sentenceEn: "I prefer green tea.", breakdown: "Prefiero = I prefer | té = tea | verde = green" },
+                { spanish: "Huevo", english: "Egg", sentence: "Como dos huevos para desayuno.", sentenceEn: "I eat two eggs for breakfast.", breakdown: "Como = I eat | dos = two | huevos = eggs | para = for | desayuno = breakfast" },
+                { spanish: "Pollo", english: "Chicken", sentence: "El pollo está bien cocido.", sentenceEn: "The chicken is well cooked.", breakdown: "El = The | pollo = chicken | está = is | bien cocido = well cooked" },
+                { spanish: "Pescado", english: "Fish", sentence: "Me gusta el pescado fresco.", sentenceEn: "I like fresh fish.", breakdown: "Me gusta = I like | el = the | pescado = fish | fresco = fresh" },
+                { spanish: "Verduras", english: "Vegetables", sentence: "Las verduras son saludables.", sentenceEn: "Vegetables are healthy.", breakdown: "Las = The | verduras = vegetables | son = are | saludables = healthy" },
+                { spanish: "Manzana", english: "Apple", sentence: "Una manzana al día.", sentenceEn: "An apple a day.", breakdown: "Una = An/A | manzana = apple | al día = per day" },
+                { spanish: "Naranja", english: "Orange", sentence: "Bebo jugo de naranja.", sentenceEn: "I drink orange juice.", breakdown: "Bebo = I drink | jugo = juice | de = of | naranja = orange" },
+                { spanish: "Plátano", english: "Banana", sentence: "El plátano está maduro.", sentenceEn: "The banana is ripe.", breakdown: "El = The | plátano = banana | está = is | maduro = ripe" }
+            ],
+            colors: [
+                { spanish: "Rojo", english: "Red", sentence: "Mi coche es rojo.", sentenceEn: "My car is red.", breakdown: "Mi = My | coche = car | es = is | rojo = red" },
+                { spanish: "Azul", english: "Blue", sentence: "El cielo es azul.", sentenceEn: "The sky is blue.", breakdown: "El = The | cielo = sky | es = is | azul = blue" },
+                { spanish: "Verde", english: "Green", sentence: "La hierba es verde.", sentenceEn: "The grass is green.", breakdown: "La = The | hierba = grass | es = is | verde = green" },
+                { spanish: "Amarillo", english: "Yellow", sentence: "El sol es amarillo.", sentenceEn: "The sun is yellow.", breakdown: "El = The | sol = sun | es = is | amarillo = yellow" },
+                { spanish: "Negro", english: "Black", sentence: "Llevo zapatos negros.", sentenceEn: "I'm wearing black shoes.", breakdown: "Llevo = I wear/carry | zapatos = shoes | negros = black (plural)" },
+                { spanish: "Blanco", english: "White", sentence: "La nieve es blanca.", sentenceEn: "The snow is white.", breakdown: "La = The | nieve = snow | es = is | blanca = white (feminine)" },
+                { spanish: "Rosa", english: "Pink", sentence: "Me gusta el color rosa.", sentenceEn: "I like the color pink.", breakdown: "Me gusta = I like | el color = the color | rosa = pink" },
+                { spanish: "Morado", english: "Purple", sentence: "Tengo una camisa morada.", sentenceEn: "I have a purple shirt.", breakdown: "Tengo = I have | una = a (feminine) | camisa = shirt | morada = purple (feminine)" },
+                { spanish: "Gris", english: "Gray", sentence: "Las nubes son grises.", sentenceEn: "The clouds are gray.", breakdown: "Las = The | nubes = clouds | son = are | grises = gray (plural)" },
+                { spanish: "Marrón", english: "Brown", sentence: "Los árboles son marrones.", sentenceEn: "The trees are brown.", breakdown: "Los = The | árboles = trees | son = are | marrones = brown (plural)" },
+                { spanish: "Naranja", english: "Orange (color)", sentence: "La calabaza es naranja.", sentenceEn: "The pumpkin is orange.", breakdown: "La = The | calabaza = pumpkin | es = is | naranja = orange" },
+                { spanish: "Dorado", english: "Gold", sentence: "El anillo es dorado.", sentenceEn: "The ring is gold.", breakdown: "El = The | anillo = ring | es = is | dorado = gold" }
+            ],
+            numbers: [
+                { spanish: "Uno", english: "One", sentence: "Tengo uno hermano.", sentenceEn: "I have one brother.", breakdown: "Tengo = I have | uno = one | hermano = brother" },
+                { spanish: "Dos", english: "Two", sentence: "Hay dos gatos aquí.", sentenceEn: "There are two cats here.", breakdown: "Hay = There is/are | dos = two | gatos = cats | aquí = here" },
+                { spanish: "Tres", english: "Three", sentence: "Son las tres de la tarde.", sentenceEn: "It's three in the afternoon.", breakdown: "Son = They are/It is | las tres = three o'clock | de la tarde = in the afternoon" },
+                { spanish: "Cuatro", english: "Four", sentence: "Vivo en el piso cuatro.", sentenceEn: "I live on the fourth floor.", breakdown: "Vivo = I live | en = in/on | el piso = the floor | cuatro = four" },
+                { spanish: "Cinco", english: "Five", sentence: "Tengo cinco dedos en cada mano.", sentenceEn: "I have five fingers on each hand.", breakdown: "Tengo = I have | cinco = five | dedos = fingers | en = on | cada = each | mano = hand" },
+                { spanish: "Seis", english: "Six", sentence: "Son las seis en punto.", sentenceEn: "It's six o'clock.", breakdown: "Son = It is | las seis = six o'clock | en punto = on the dot" },
+                { spanish: "Siete", english: "Seven", sentence: "Trabajo siete días a la semana.", sentenceEn: "I work seven days a week.", breakdown: "Trabajo = I work | siete = seven | días = days | a la semana = per week" },
+                { spanish: "Ocho", english: "Eight", sentence: "Mi hijo tiene ocho años.", sentenceEn: "My son is eight years old.", breakdown: "Mi = My | hijo = son | tiene = has | ocho años = eight years" },
+                { spanish: "Nueve", english: "Nine", sentence: "La clase empieza a las nueve.", sentenceEn: "Class starts at nine.", breakdown: "La clase = The class | empieza = starts | a las nueve = at nine" },
+                { spanish: "Diez", english: "Ten", sentence: "Diez más diez son veinte.", sentenceEn: "Ten plus ten is twenty.", breakdown: "Diez = Ten | más = plus | son = are | veinte = twenty" },
+                { spanish: "Once", english: "Eleven", sentence: "Llegué a las once.", sentenceEn: "I arrived at eleven.", breakdown: "Llegué = I arrived | a = at | las once = eleven" },
+                { spanish: "Doce", english: "Twelve", sentence: "Son las doce del mediodía.", sentenceEn: "It's twelve noon.", breakdown: "Son = It is | las doce = twelve | del mediodía = of noon" },
+                { spanish: "Quince", english: "Fifteen", sentence: "Esperé quince minutos.", sentenceEn: "I waited fifteen minutes.", breakdown: "Esperé = I waited | quince = fifteen | minutos = minutes" },
+                { spanish: "Veinte", english: "Twenty", sentence: "Tengo veinte años.", sentenceEn: "I am twenty years old.", breakdown: "Tengo = I have | veinte = twenty | años = years" },
+                { spanish: "Treinta", english: "Thirty", sentence: "Son las dos y treinta.", sentenceEn: "It's two thirty.", breakdown: "Son = It is | las dos = two o'clock | y = and | treinta = thirty" },
+                { spanish: "Cincuenta", english: "Fifty", sentence: "Cuesta cincuenta dólares.", sentenceEn: "It costs fifty dollars.", breakdown: "Cuesta = It costs | cincuenta = fifty | dólares = dollars" },
+                { spanish: "Cien", english: "One hundred", sentence: "Cuesta cien dólares.", sentenceEn: "It costs one hundred dollars.", breakdown: "Cuesta = It costs | cien = one hundred | dólares = dollars" },
+                { spanish: "Mil", english: "One thousand", sentence: "Gano mil dólares al mes.", sentenceEn: "I earn a thousand dollars per month.", breakdown: "Gano = I earn | mil = one thousand | dólares = dollars | al mes = per month" }
+            ],
+            animals: [
+                { spanish: "Perro", english: "Dog", sentence: "Mi perro se llama Max.", sentenceEn: "My dog is called Max.", breakdown: "Mi = My | perro = dog | se llama = is called | Max = Max" },
+                { spanish: "Gato", english: "Cat", sentence: "El gato está durmiendo.", sentenceEn: "The cat is sleeping.", breakdown: "El = The | gato = cat | está durmiendo = is sleeping" },
+                { spanish: "Pájaro", english: "Bird", sentence: "El pájaro canta por la mañana.", sentenceEn: "The bird sings in the morning.", breakdown: "El = The | pájaro = bird | canta = sings | por la mañana = in the morning" },
+                { spanish: "Pez", english: "Fish", sentence: "Tengo un pez en mi acuario.", sentenceEn: "I have a fish in my aquarium.", breakdown: "Tengo = I have | un = a | pez = fish | en = in | mi = my | acuario = aquarium" },
+                { spanish: "Caballo", english: "Horse", sentence: "El caballo corre rápido.", sentenceEn: "The horse runs fast.", breakdown: "El = The | caballo = horse | corre = runs | rápido = fast" },
+                { spanish: "Vaca", english: "Cow", sentence: "La vaca da leche.", sentenceEn: "The cow gives milk.", breakdown: "La = The | vaca = cow | da = gives | leche = milk" },
+                { spanish: "Elefante", english: "Elephant", sentence: "El elefante es muy grande.", sentenceEn: "The elephant is very big.", breakdown: "El = The | elefante = elephant | es = is | muy = very | grande = big" },
+                { spanish: "León", english: "Lion", sentence: "El león es el rey de la selva.", sentenceEn: "The lion is the king of the jungle.", breakdown: "El león = The lion | es = is | el rey = the king | de = of | la selva = the jungle" },
+                { spanish: "Tigre", english: "Tiger", sentence: "El tigre es un cazador.", sentenceEn: "The tiger is a hunter.", breakdown: "El = The | tigre = tiger | es = is | un = a | cazador = hunter" },
+                { spanish: "Ratón", english: "Mouse", sentence: "Hay un ratón en la casa.", sentenceEn: "There's a mouse in the house.", breakdown: "Hay = There is | un = a | ratón = mouse | en = in | la casa = the house" },
+                { spanish: "Conejo", english: "Rabbit", sentence: "El conejo come zanahorias.", sentenceEn: "The rabbit eats carrots.", breakdown: "El = The | conejo = rabbit | come = eats | zanahorias = carrots" },
+                { spanish: "Oso", english: "Bear", sentence: "El oso es fuerte.", sentenceEn: "The bear is strong.", breakdown: "El = The | oso = bear | es = is | fuerte = strong" }
+            ],
+            family: [
+                { spanish: "Familia", english: "Family", sentence: "Mi familia es muy grande.", sentenceEn: "My family is very big.", breakdown: "Mi = My | familia = family | es = is | muy = very | grande = big" },
+                { spanish: "Madre", english: "Mother", sentence: "Mi madre cocina muy bien.", sentenceEn: "My mother cooks very well.", breakdown: "Mi = My | madre = mother | cocina = cooks | muy bien = very well" },
+                { spanish: "Padre", english: "Father", sentence: "Mi padre trabaja en la ciudad.", sentenceEn: "My father works in the city.", breakdown: "Mi = My | padre = father | trabaja = works | en = in | la ciudad = the city" },
+                { spanish: "Hermano", english: "Brother", sentence: "Tengo un hermano mayor.", sentenceEn: "I have an older brother.", breakdown: "Tengo = I have | un = a/an | hermano = brother | mayor = older" },
+                { spanish: "Hermana", english: "Sister", sentence: "Mi hermana estudia medicina.", sentenceEn: "My sister studies medicine.", breakdown: "Mi = My | hermana = sister | estudia = studies | medicina = medicine" },
+                { spanish: "Hijo", english: "Son", sentence: "Mi hijo tiene cinco años.", sentenceEn: "My son is five years old.", breakdown: "Mi = My | hijo = son | tiene = has | cinco años = five years" },
+                { spanish: "Hija", english: "Daughter", sentence: "Mi hija va a la escuela.", sentenceEn: "My daughter goes to school.", breakdown: "Mi = My | hija = daughter | va = goes | a = to | la escuela = the school" },
+                { spanish: "Abuelo", english: "Grandfather", sentence: "Mi abuelo cuenta historias.", sentenceEn: "My grandfather tells stories.", breakdown: "Mi = My | abuelo = grandfather | cuenta = tells | historias = stories" },
+                { spanish: "Abuela", english: "Grandmother", sentence: "Mi abuela hace galletas.", sentenceEn: "My grandmother makes cookies.", breakdown: "Mi = My | abuela = grandmother | hace = makes | galletas = cookies" },
+                { spanish: "Tío", english: "Uncle", sentence: "Mi tío vive en Madrid.", sentenceEn: "My uncle lives in Madrid.", breakdown: "Mi = My | tío = uncle | vive = lives | en = in | Madrid = Madrid" },
+                { spanish: "Tía", english: "Aunt", sentence: "Mi tía es profesora.", sentenceEn: "My aunt is a teacher.", breakdown: "Mi = My | tía = aunt | es = is | profesora = teacher" },
+                { spanish: "Primo", english: "Cousin (male)", sentence: "Mi primo juega fútbol.", sentenceEn: "My cousin plays soccer.", breakdown: "Mi = My | primo = cousin | juega = plays | fútbol = soccer" },
+                { spanish: "Prima", english: "Cousin (female)", sentence: "Mi prima es doctora.", sentenceEn: "My cousin is a doctor.", breakdown: "Mi = My | prima = cousin | es = is | doctora = doctor" },
+                { spanish: "Esposo", english: "Husband", sentence: "Mi esposo es muy amable.", sentenceEn: "My husband is very kind.", breakdown: "Mi = My | esposo = husband | es = is | muy = very | amable = kind" },
+                { spanish: "Esposa", english: "Wife", sentence: "Mi esposa trabaja en casa.", sentenceEn: "My wife works from home.", breakdown: "Mi = My | esposa = wife | trabaja = works | en casa = from home" }
+            ],
+            body: [
+                { spanish: "Cabeza", english: "Head", sentence: "Me duele la cabeza.", sentenceEn: "My head hurts.", breakdown: "Me duele = It hurts me | la = the | cabeza = head" },
+                { spanish: "Ojo", english: "Eye", sentence: "Tengo los ojos azules.", sentenceEn: "I have blue eyes.", breakdown: "Tengo = I have | los ojos = the eyes | azules = blue (plural)" },
+                { spanish: "Nariz", english: "Nose", sentence: "Mi nariz está resfriada.", sentenceEn: "My nose is stuffy.", breakdown: "Mi = My | nariz = nose | está resfriada = is stuffy/congested" },
+                { spanish: "Boca", english: "Mouth", sentence: "Abre la boca, por favor.", sentenceEn: "Open your mouth, please.", breakdown: "Abre = Open | la = the | boca = mouth | por favor = please" },
+                { spanish: "Mano", english: "Hand", sentence: "Dame la mano.", sentenceEn: "Give me your hand.", breakdown: "Dame = Give me | la = the | mano = hand" },
+                { spanish: "Pie", english: "Foot", sentence: "Me duele el pie derecho.", sentenceEn: "My right foot hurts.", breakdown: "Me duele = It hurts me | el = the | pie = foot | derecho = right" },
+                { spanish: "Brazo", english: "Arm", sentence: "Levanta el brazo.", sentenceEn: "Raise your arm.", breakdown: "Levanta = Raise/Lift | el = the | brazo = arm" },
+                { spanish: "Pierna", english: "Leg", sentence: "Crucé las piernas.", sentenceEn: "I crossed my legs.", breakdown: "Crucé = I crossed | las = the (plural) | piernas = legs" },
+                { spanish: "Oreja", english: "Ear", sentence: "No puedo oír con esta oreja.", sentenceEn: "I can't hear with this ear.", breakdown: "No puedo = I can't | oír = hear | con = with | esta = this | oreja = ear" },
+                { spanish: "Dedo", english: "Finger", sentence: "Me corté el dedo.", sentenceEn: "I cut my finger.", breakdown: "Me corté = I cut myself | el = the | dedo = finger" },
+                { spanish: "Estómago", english: "Stomach", sentence: "Me duele el estómago.", sentenceEn: "My stomach hurts.", breakdown: "Me duele = It hurts me | el = the | estómago = stomach" },
+                { spanish: "Corazón", english: "Heart", sentence: "Mi corazón late rápido.", sentenceEn: "My heart beats fast.", breakdown: "Mi = My | corazón = heart | late = beats | rápido = fast" }
+            ],
+            verbs: [
+                { spanish: "Hablar", english: "To speak", sentence: "Me gusta hablar español.", sentenceEn: "I like to speak Spanish.", breakdown: "Me gusta = I like | hablar = to speak | español = Spanish" },
+                { spanish: "Comer", english: "To eat", sentence: "Vamos a comer juntos.", sentenceEn: "We're going to eat together.", breakdown: "Vamos a = We're going to | comer = to eat | juntos = together" },
+                { spanish: "Beber", english: "To drink", sentence: "Quiero beber agua fría.", sentenceEn: "I want to drink cold water.", breakdown: "Quiero = I want | beber = to drink | agua = water | fría = cold" },
+                { spanish: "Correr", english: "To run", sentence: "Me gusta correr por la mañana.", sentenceEn: "I like to run in the morning.", breakdown: "Me gusta = I like | correr = to run | por la mañana = in the morning" },
+                { spanish: "Dormir", english: "To sleep", sentence: "Necesito dormir más.", sentenceEn: "I need to sleep more.", breakdown: "Necesito = I need | dormir = to sleep | más = more" },
+                { spanish: "Escribir", english: "To write", sentence: "Voy a escribir una carta.", sentenceEn: "I'm going to write a letter.", breakdown: "Voy a = I'm going to | escribir = to write | una = a | carta = letter" },
+                { spanish: "Leer", english: "To read", sentence: "Me encanta leer libros.", sentenceEn: "I love to read books.", breakdown: "Me encanta = I love | leer = to read | libros = books" },
+                { spanish: "Escuchar", english: "To listen", sentence: "Escucho música cada día.", sentenceEn: "I listen to music every day.", breakdown: "Escucho = I listen | música = music | cada día = every day" },
+                { spanish: "Caminar", english: "To walk", sentence: "Camino al trabajo todos los días.", sentenceEn: "I walk to work every day.", breakdown: "Camino = I walk | al trabajo = to work | todos los días = every day" },
+                { spanish: "Trabajar", english: "To work", sentence: "Trabajo de lunes a viernes.", sentenceEn: "I work Monday to Friday.", breakdown: "Trabajo = I work | de = from | lunes a viernes = Monday to Friday" },
+                { spanish: "Estudiar", english: "To study", sentence: "Estudio español cada noche.", sentenceEn: "I study Spanish every night.", breakdown: "Estudio = I study | español = Spanish | cada noche = every night" },
+                { spanish: "Vivir", english: "To live", sentence: "Vivo en Nueva York.", sentenceEn: "I live in New York.", breakdown: "Vivo = I live | en = in | Nueva York = New York" },
+                { spanish: "Comprar", english: "To buy", sentence: "Necesito comprar comida.", sentenceEn: "I need to buy food.", breakdown: "Necesito = I need | comprar = to buy | comida = food" },
+                { spanish: "Vender", english: "To sell", sentence: "Vendo mi coche viejo.", sentenceEn: "I'm selling my old car.", breakdown: "Vendo = I sell | mi = my | coche = car | viejo = old" },
+                { spanish: "Abrir", english: "To open", sentence: "Abre la puerta, por favor.", sentenceEn: "Open the door, please.", breakdown: "Abre = Open | la puerta = the door | por favor = please" },
+                { spanish: "Cerrar", english: "To close", sentence: "Cierra la ventana.", sentenceEn: "Close the window.", breakdown: "Cierra = Close | la ventana = the window" }
+            ],
+            time: [
+                { spanish: "Hoy", english: "Today", sentence: "Hoy es lunes.", sentenceEn: "Today is Monday.", breakdown: "Hoy = Today | es = is | lunes = Monday" },
+                { spanish: "Mañana", english: "Tomorrow", sentence: "Te veo mañana.", sentenceEn: "I'll see you tomorrow.", breakdown: "Te veo = I'll see you | mañana = tomorrow" },
+                { spanish: "Ayer", english: "Yesterday", sentence: "Ayer fui al cine.", sentenceEn: "Yesterday I went to the movies.", breakdown: "Ayer = Yesterday | fui = I went | al cine = to the movies" },
+                { spanish: "Ahora", english: "Now", sentence: "Estoy ocupado ahora.", sentenceEn: "I'm busy now.", breakdown: "Estoy = I am | ocupado = busy | ahora = now" },
+                { spanish: "Después", english: "Later/After", sentence: "Hablamos después.", sentenceEn: "We'll talk later.", breakdown: "Hablamos = We talk/will talk | después = later" },
+                { spanish: "Antes", english: "Before", sentence: "Llegué antes que tú.", sentenceEn: "I arrived before you.", breakdown: "Llegué = I arrived | antes que = before | tú = you" },
+                { spanish: "Siempre", english: "Always", sentence: "Siempre estoy feliz.", sentenceEn: "I'm always happy.", breakdown: "Siempre = Always | estoy = I am | feliz = happy" },
+                { spanish: "Nunca", english: "Never", sentence: "Nunca como carne.", sentenceEn: "I never eat meat.", breakdown: "Nunca = Never | como = I eat | carne = meat" },
+                { spanish: "Tarde", english: "Late/Afternoon", sentence: "Llegué tarde.", sentenceEn: "I arrived late.", breakdown: "Llegué = I arrived | tarde = late" },
+                { spanish: "Temprano", english: "Early", sentence: "Me levanto temprano.", sentenceEn: "I wake up early.", breakdown: "Me levanto = I get up | temprano = early" },
+                { spanish: "Noche", english: "Night", sentence: "Trabajo de noche.", sentenceEn: "I work at night.", breakdown: "Trabajo = I work | de noche = at night" },
+                { spanish: "Día", english: "Day", sentence: "Tengo un buen día.", sentenceEn: "I'm having a good day.", breakdown: "Tengo = I have | un = a | buen = good | día = day" }
+            ],
+            places: [
+                { spanish: "Casa", english: "House/Home", sentence: "Voy a casa.", sentenceEn: "I'm going home.", breakdown: "Voy = I go | a = to | casa = home" },
+                { spanish: "Escuela", english: "School", sentence: "Los niños van a la escuela.", sentenceEn: "The children go to school.", breakdown: "Los niños = The children | van = go | a = to | la escuela = the school" },
+                { spanish: "Trabajo", english: "Work/Job", sentence: "Estoy en el trabajo.", sentenceEn: "I'm at work.", breakdown: "Estoy = I am | en = at/in | el trabajo = the work" },
+                { spanish: "Tienda", english: "Store", sentence: "Voy a la tienda.", sentenceEn: "I'm going to the store.", breakdown: "Voy = I go | a = to | la tienda = the store" },
+                { spanish: "Restaurante", english: "Restaurant", sentence: "Comemos en un restaurante.", sentenceEn: "We eat at a restaurant.", breakdown: "Comemos = We eat | en = in/at | un = a | restaurante = restaurant" },
+                { spanish: "Hospital", english: "Hospital", sentence: "Trabajo en un hospital.", sentenceEn: "I work in a hospital.", breakdown: "Trabajo = I work | en = in | un = a | hospital = hospital" },
+                { spanish: "Banco", english: "Bank", sentence: "Voy al banco mañana.", sentenceEn: "I'm going to the bank tomorrow.", breakdown: "Voy = I go | al banco = to the bank | mañana = tomorrow" },
+                { spanish: "Parque", english: "Park", sentence: "Los niños juegan en el parque.", sentenceEn: "The children play in the park.", breakdown: "Los niños = The children | juegan = play | en = in | el parque = the park" },
+                { spanish: "Calle", english: "Street", sentence: "Vivo en esta calle.", sentenceEn: "I live on this street.", breakdown: "Vivo = I live | en = on | esta = this | calle = street" },
+                { spanish: "Ciudad", english: "City", sentence: "La ciudad es grande.", sentenceEn: "The city is big.", breakdown: "La = The | ciudad = city | es = is | grande = big" },
+                { spanish: "País", english: "Country", sentence: "Mi país es bonito.", sentenceEn: "My country is beautiful.", breakdown: "Mi = My | país = country | es = is | bonito = beautiful" },
+                { spanish: "Playa", english: "Beach", sentence: "Vamos a la playa.", sentenceEn: "We're going to the beach.", breakdown: "Vamos = We go | a = to | la playa = the beach" }
+            ]
+        };
+
+        const phrases = [
+            { spanish: "¿Cómo estás?", english: "How are you?" },
+            { spanish: "Me llamo...", english: "My name is..." },
+            { spanish: "¿Dónde está el baño?", english: "Where is the bathroom?" },
+            { spanish: "No entiendo", english: "I don't understand" },
+            { spanish: "¿Hablas inglés?", english: "Do you speak English?" },
+            { spanish: "¿Cuánto cuesta?", english: "How much does it cost?" },
+            { spanish: "Mucho gusto", english: "Nice to meet you" },
+            { spanish: "De nada", english: "You're welcome" },
+            { spanish: "Lo siento", english: "I'm sorry" },
+            { spanish: "Tengo hambre", english: "I'm hungry" }
+        ];
+
+        let currentMode = 'flashcards';
+        let currentCategory = 'basics';
+        let currentIndex = 0;
+        let isFlipped = false;
+        let quizScore = 0;
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+
+        function speak(text, lang = 'es-ES') {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.8; // Slightly slower for learning
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Sorry, your browser doesn\'t support text-to-speech!');
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update active button
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Reset states
+            currentIndex = 0;
+            isFlipped = false;
+            
+            // Render content
+            if (mode === 'flashcards') {
+                renderFlashcards();
+            } else if (mode === 'phrases') {
+                renderPhrases();
+            } else if (mode === 'quiz') {
+                startQuiz();
+            }
+        }
+
+        function renderFlashcards() {
+            const content = document.getElementById('content');
+            const words = vocabulary[currentCategory];
+            const word = words[currentIndex];
+            
+            content.innerHTML = `
+                <div class="category-selector">
+                    ${Object.keys(vocabulary).map(cat => `
+                        <button class="category-btn ${cat === currentCategory ? 'active' : ''}" 
+                                onclick="changeCategory('${cat}')">
+                            ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="flashcard ${isFlipped ? 'flipped' : ''}" onclick="flipCard()">
+                    <div class="word">${isFlipped ? word.english : word.spanish}</div>
+                    <div class="translation">${isFlipped ? 'English' : 'Español'}</div>
+                    ${isFlipped ? `
+                        <p style="margin-top: 25px; font-size: 1.2em; font-style: italic; opacity: 0.95; color: #fff;">
+                            "${word.sentence}"
+                        </p>
+                        <p style="margin-top: 15px; font-size: 1.1em; opacity: 0.85;">
+                            ${word.sentenceEn}
+                        </p>
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.15); border-radius: 10px; font-size: 0.95em;">
+                            <div style="opacity: 0.9; margin-bottom: 8px; font-weight: 600;">Word Breakdown:</div>
+                            <div style="opacity: 0.95; line-height: 1.6;">${word.breakdown}</div>
+                        </div>
+                    ` : ''}
+                    <p style="margin-top: 20px; opacity: 0.8;">Click to flip</p>
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button class="speaker-btn" onclick="event.stopPropagation(); speak('${word.spanish}', 'es-ES')" title="Hear pronunciation">
+                        🔊
+                    </button>
+                    ${isFlipped ? `<button class="speaker-btn" onclick="event.stopPropagation(); speak('${word.sentence}', 'es-ES')" title="Hear example sentence">📖</button>` : ''}
+                </div>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="previousCard()" ${currentIndex === 0 ? 'disabled' : ''}>
+                        ← Previous
+                    </button>
+                    <button class="btn btn-primary" onclick="nextCard()">
+                        ${currentIndex === words.length - 1 ? 'Start Over' : 'Next →'}
+                    </button>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: #6c757d;">
+                    Card ${currentIndex + 1} of ${words.length}
+                </p>
+            `;
+        }
+
+        function changeCategory(category) {
+            currentCategory = category;
+            currentIndex = 0;
+            isFlipped = false;
+            renderFlashcards();
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            renderFlashcards();
+        }
+
+        function nextCard() {
+            const words = vocabulary[currentCategory];
+            if (currentIndex === words.length - 1) {
+                currentIndex = 0;
+            } else {
+                currentIndex++;
+            }
+            isFlipped = false;
+            renderFlashcards();
+        }
+
+        function previousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                isFlipped = false;
+                renderFlashcards();
+            }
+        }
+
+        function renderPhrases() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">
+                    Common Phrases
+                </h2>
+                <div class="phrase-list">
+                    ${phrases.map((phrase, index) => `
+                        <div class="phrase-item">
+                            <div class="phrase-header">
+                                <button class="speaker-btn" onclick="speak('${phrase.spanish}', 'es-ES')" title="Hear pronunciation">
+                                    🔊
+                                </button>
+                                <div style="flex: 1;">
+                                    <div class="phrase-spanish">${phrase.spanish}</div>
+                                    <div class="phrase-english">${phrase.english}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function startQuiz() {
+            quizScore = 0;
+            currentQuizIndex = 0;
+            
+            // Generate quiz questions from all categories
+            quizQuestions = [];
+            Object.values(vocabulary).forEach(category => {
+                category.forEach(word => {
+                    quizQuestions.push({
+                        question: word.spanish,
+                        correct: word.english,
+                        options: generateOptions(word.english, category)
+                    });
+                });
+            });
+            
+            // Shuffle and take 10 questions
+            quizQuestions = shuffleArray(quizQuestions).slice(0, 10);
+            
+            renderQuiz();
+        }
+
+        function generateOptions(correct, category) {
+            const options = [correct];
+            const allWords = category.map(w => w.english).filter(w => w !== correct);
+            
+            while (options.length < 4 && allWords.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allWords.length);
+                options.push(allWords.splice(randomIndex, 1)[0]);
+            }
+            
+            return shuffleArray(options);
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function renderQuiz() {
+            const content = document.getElementById('content');
+            const question = quizQuestions[currentQuizIndex];
+            
+            content.innerHTML = `
+                <div class="score">
+                    Score: ${quizScore} / ${currentQuizIndex} | Question ${currentQuizIndex + 1} of ${quizQuestions.length}
+                </div>
+                <div class="quiz-question">
+                    <h3>${question.question}</h3>
+                    <button class="speaker-btn" onclick="speak('${question.question}', 'es-ES')" title="Hear pronunciation">
+                        🔊
+                    </button>
+                    <p style="color: #6c757d; margin-top: 10px;">Select the correct translation:</p>
+                </div>
+                <div class="quiz-options">
+                    ${question.options.map(option => `
+                        <div class="quiz-option" onclick="checkAnswer('${option}', '${question.correct}')">
+                            ${option}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function checkAnswer(selected, correct) {
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+                if (option.textContent.trim() === correct) {
+                    option.classList.add('correct');
+                }
+                if (option.textContent.trim() === selected && selected !== correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (selected === correct) {
+                quizScore++;
+            }
+            
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex < quizQuestions.length) {
+                    renderQuiz();
+                } else {
+                    showQuizResults();
+                }
+            }, 1500);
+        }
+
+        function showQuizResults() {
+            const content = document.getElementById('content');
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            
+            content.innerHTML = `
+                <div style="text-align: center;">
+                    <h2 style="color: #667eea; font-size: 2.5em; margin-bottom: 20px;">
+                        Quiz Complete! 🎉
+                    </h2>
+                    <div style="font-size: 4em; margin: 30px 0;">
+                        ${percentage >= 80 ? '🌟' : percentage >= 60 ? '👍' : '💪'}
+                    </div>
+                    <div class="score" style="font-size: 1.5em;">
+                        You scored ${quizScore} out of ${quizQuestions.length}
+                    </div>
+                    <p style="font-size: 1.3em; color: #6c757d; margin: 20px 0;">
+                        ${percentage >= 80 ? '¡Excelente! You\'re doing great!' : 
+                          percentage >= 60 ? '¡Bien! Keep practicing!' : 
+                          '¡Ánimo! Practice makes perfect!'}
+                    </p>
+                    <div class="controls" style="margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="startQuiz()">
+                            Try Again
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchMode('flashcards'); renderFlashcards();">
+                            Back to Flashcards
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        renderFlashcards();
+    </script>
+</body>
+</html>
